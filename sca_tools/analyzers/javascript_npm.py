@@ -19,6 +19,8 @@ def _build_sbom_from_package_lock(lock: dict[str, Any]) -> dict[str, Any]:
     sbom = make_cyclonedx_base("sca-js-npm")
     components: list[dict[str, Any]] = []
     seen: set[str] = set()
+    purl_by_name_version: dict[tuple[str, str], str] = {}
+    purl_by_name: dict[str, str] = {}
 
     packages = lock.get("packages")
     if isinstance(packages, dict):
@@ -40,6 +42,9 @@ def _build_sbom_from_package_lock(lock: dict[str, Any]) -> dict[str, Any]:
             if purl in seen:
                 continue
             seen.add(purl)
+            purl_by_name_version[(name, version)] = purl
+            # best-effort: keep first purl per name
+            purl_by_name.setdefault(name, purl)
             components.append(
                 {
                     "type": "library",
@@ -63,6 +68,8 @@ def _build_sbom_from_package_lock(lock: dict[str, Any]) -> dict[str, Any]:
                 if purl in seen:
                     continue
                 seen.add(purl)
+                purl_by_name_version[(name, version)] = purl
+                purl_by_name.setdefault(name, purl)
                 components.append(
                     {
                         "type": "library",
@@ -74,6 +81,39 @@ def _build_sbom_from_package_lock(lock: dict[str, Any]) -> dict[str, Any]:
                 )
 
     sbom["components"] = components
+
+    # dependencies graph (best-effort)
+    deps_graph: list[dict[str, Any]] = []
+    if isinstance(packages, dict):
+        for pkg_path, info in packages.items():
+            if pkg_path == "" or not isinstance(info, dict):
+                continue
+            name = info.get("name")
+            version = info.get("version")
+            if not name or not version:
+                if isinstance(pkg_path, str) and pkg_path.startswith("node_modules/"):
+                    name = pkg_path[len("node_modules/") :]
+            if not name or not version:
+                continue
+            ref = purl_by_name_version.get((name, version))
+            if not ref:
+                continue
+            depends_on: list[str] = []
+            deps = info.get("dependencies")
+            if isinstance(deps, dict):
+                for dn in deps.keys():
+                    if not isinstance(dn, str):
+                        continue
+                    # resolve by name only (lock can contain multiple versions)
+                    dp = purl_by_name.get(dn)
+                    if dp:
+                        depends_on.append(dp)
+            entry: dict[str, Any] = {"ref": ref}
+            if depends_on:
+                entry["dependsOn"] = depends_on
+            deps_graph.append(entry)
+    if deps_graph:
+        sbom["dependencies"] = deps_graph
     return sbom
 
 

@@ -26,6 +26,7 @@ def _build_sbom_from_cargo_lock(lock: dict[str, Any], project_name: str = "rust-
     packages = lock.get("package") or lock.get("packages")  # Cargo.lock uses "package"
     components: list[dict[str, Any]] = []
     seen: set[str] = set()
+    purl_by_nv: dict[tuple[str, str], str] = {}
 
     if isinstance(packages, list):
         for p in packages:
@@ -39,6 +40,7 @@ def _build_sbom_from_cargo_lock(lock: dict[str, Any], project_name: str = "rust-
             if purl in seen:
                 continue
             seen.add(purl)
+            purl_by_nv[(name, version)] = purl
             components.append(
                 {
                     "type": "library",
@@ -56,6 +58,41 @@ def _build_sbom_from_cargo_lock(lock: dict[str, Any], project_name: str = "rust-
         "version": "unknown",
     }
     sbom["components"] = components
+
+    # dependencies graph (best-effort)
+    deps_graph: list[dict[str, Any]] = []
+    if isinstance(packages, list):
+        for p in packages:
+            if not isinstance(p, dict):
+                continue
+            name = p.get("name")
+            version = p.get("version")
+            if not isinstance(name, str) or not isinstance(version, str):
+                continue
+            ref = purl_by_nv.get((name, version))
+            if not ref:
+                continue
+            depends_on: list[str] = []
+            deps = p.get("dependencies")
+            if isinstance(deps, list):
+                for d in deps:
+                    if not isinstance(d, str):
+                        continue
+                    # formats:
+                    # - "serde 1.0.0"
+                    # - "serde 1.0.0 (registry+...)" or includes source
+                    parts = d.split()
+                    if len(parts) >= 2:
+                        dn, dv = parts[0], parts[1]
+                        dpurl = purl_by_nv.get((dn, dv))
+                        if dpurl:
+                            depends_on.append(dpurl)
+            entry: dict[str, Any] = {"ref": ref}
+            if depends_on:
+                entry["dependsOn"] = depends_on
+            deps_graph.append(entry)
+    if deps_graph:
+        sbom["dependencies"] = deps_graph
     return sbom
 
 

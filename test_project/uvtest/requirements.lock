@@ -1,0 +1,14 @@
+requests==2.20.0
+urllib3==1.21.1
+jinja2==2.10.1
+django==1.11.29
+pillow==5.4.1
+
+# transitive deps (for demo / offline lock)
+certifi==2018.10.15
+chardet==3.0.4
+idna==2.7
+markupsafe==1.1.1
+pytz==2018.7
+
+
