@@ -1,9 +1,0 @@
-{
-  "inputPath": "/Users/zhusicheng/Desktop/SCA/test_project/uvtest",
-  "projectRoot": "/var/folders/80/0f4zc78s0yv3_drj81dwbr500000gn/T/uv_project_jx87lgsn",
-  "sanitizedZip": "/Users/zhusicheng/Desktop/SCA/results/python/.work/uvtest_20251230_121810/input_sanitized.zip",
-  "dependenciesFound": 12,
-  "purlsGenerated": 12,
-  "vulnerabilitiesFound": 0,
-  "offlineDbUsed": null
-}

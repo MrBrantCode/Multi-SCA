@@ -1,1 +1,0 @@
-Warning: cargo metadata failed in offline mode, licenses will not be included

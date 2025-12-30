@@ -1,31 +1,27 @@
 # SCA 统一命令行工具（Rust / Python(uv) / JavaScript）
 
-本项目将多个小组实现的 SCA 工具统一封装成一个命令行入口 `sca`，支持：
+本项目将 SCA 分析能力统一封装成一个命令行入口 `sca`，支持：
 - 自动识别项目类型（目录或 zip）
-- 按类型调用对应工具生成 SBOM（CycloneDX JSON）与相关输出
+- 按类型调用对应 **纯 Python 分析器** 生成 SBOM（CycloneDX JSON）与相关输出
 - 统一归档到 `results/` 目录
 - 支持交互式命令行：`sca shell`
 
-> 当前已接入：**Rust**、**Python(uv)**、**JavaScript(npm lock)**  
-> 后续可继续接入 Java/Maven 等。
+> 当前已接入（纯 Python）：**Rust(Cargo.lock)**、**Python(pyproject.toml)**、**JavaScript(package-lock.json)**  
+> 后续可按统一接口扩展接入 Java/Maven、Go、.NET 等。
 
 ---
 
 ## 项目结构（高层）
 
-- `unified_sca/`：统一包装器核心代码
+- `unified_sca/`：统一包装器（CLI / detect / zip_utils / shell）
   - `cli.py`：统一命令入口（detect/scan/shell）
   - `detect.py`：项目类型识别（支持 zip 下钻）
   - `zip_utils.py`：安全解压（含 Windows 反斜杠路径规范化）
-  - `runners/`：各语言工具的适配层
-    - `rust_runner.py`
-    - `python_uv_runner.py`
-    - `javascript_runner.py`
   - `shell.py`：交互式 shell
-- `SCA/`：三组工具原始实现（尽量保持不改动）
-  - `SCA/rust_sca/rustpj/`：Rust 组工具（rustsec advisory-db）
-  - `SCA/uv_sca/Python-uv-SCA-engine/uvTree/`：Python uv 工具
-  - `SCA/js_sca/project/project/target/`：JavaScript 组 jar（解析 package-lock.json）
+- `sca_tools/`：纯 Python 分析器（产品化/可扩展）
+  - `sca_tools/base.py`：统一 Analyzer 接口/输出约定
+  - `sca_tools/registry.py`：按类型调度
+  - `sca_tools/analyzers/`：各语言锁文件解析与 SBOM 生成
 - `test_project/`：测试用项目（目录/zip）
 - `results/`：统一输出目录（scan 时生成）
 
@@ -104,13 +100,13 @@ sca> exit
 - **建议被测项目携带 `Cargo.lock`**（否则工具可能尝试 `cargo generate-lockfile`，离线/无 cargo 会失败）
 - 漏洞库使用本仓库自带的 `SCA/rust_sca/rustpj/data/advisory-db`
 
-### Python(uv)
-- 理想离线形态：项目包含 `pyproject.toml + uv.lock`
-- 没有 `uv.lock` 时，依赖解析可能不完整，且 `uv tree` 有机会尝试联网（取决于环境/缓存）
+### Python
+- 当前纯 Python 版本默认从 `pyproject.toml` 读取 **直接依赖** 生成 SBOM（不依赖 uv / 不联网）
+  - 若希望未来生成“完整传递依赖树”，可在后续版本引入 lock 文件解析/离线索引机制（按统一接口扩展即可）
 
 ### JavaScript（npm lock）
 - 依赖 `package-lock.json`
-- JavaScript 组工具是 Java jar：**需要 Java 11+**
+- 当前纯 Python 版本无需 Java
 
 ---
 
@@ -128,13 +124,7 @@ pip install .
 
 安装后会生成命令 `sca`。
 
-### 配置工具根目录（建议设置）
-
-为了让 wrapper 在任何位置运行都能找到三组工具目录，设置：
-
-```bash
-export SCA_TOOLS_ROOT="/opt/sca"
-```
+（纯 Python 版本无需配置 `SCA_TOOLS_ROOT`）
 
 ### 使用示例
 

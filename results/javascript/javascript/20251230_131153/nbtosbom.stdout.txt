@@ -1,1 +1,0 @@
-SBOM物料清单 已生成: /Users/zhusicheng/Desktop/SCA/results/javascript/.work/javascript_20251230_131153/sbom.json

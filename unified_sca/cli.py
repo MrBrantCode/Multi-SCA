@@ -1,17 +1,14 @@
 from __future__ import annotations
 
 import argparse
-import os
 import re
 import sys
 from datetime import datetime
 from pathlib import Path
 
 from .detect import Detection, detect_project_types
-from .runners.rust_runner import run_rust_sca
-from .runners.python_uv_runner import run_uv_sca
-from .runners.javascript_runner import run_javascript_sca
 from .zip_utils import cleanup_work_dir, safe_extract_zip
+from sca_tools.registry import scan_by_type
 
 
 def _slug(s: str) -> str:
@@ -147,7 +144,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="对输入目录的第一层子目录/zip分别识别并汇总输出（适合传入 test_project/ 这种容器目录）",
     )
 
-    scan = sub.add_parser("scan", help="根据识别到的项目类型调用对应工具进行分析（已接入 rust / python(uv) / javascript）")
+    scan = sub.add_parser("scan", help="根据识别到的项目类型调用对应工具进行分析（纯Python：rust/python/javascript）")
     scan.add_argument("path", help="待检测项目路径(目录或.zip)")
     scan.add_argument(
         "--results-dir",
@@ -222,54 +219,16 @@ def main(argv: list[str] | None = None) -> int:
         results_dir.mkdir(parents=True, exist_ok=True)
 
         det = detect_one(in_path, keep_workdir=False, work_base=_work_base_default())
+        detected = det.detected_types[0] if det.detected_types else "unknown"
+        if detected == "unknown":
+            raise SystemExit(f"暂未接入该类型的分析：识别结果={det.detected_types}")
 
-        # tools root: allow override for deployments
-        # - 默认：如果当前代码在“整仓库目录”运行，则 tools_root=<repo_root>
-        # - 服务器部署：建议设置环境变量 SCA_TOOLS_ROOT 指向包含 SCA/ 目录的路径
-        tools_root_env = os.environ.get("SCA_TOOLS_ROOT")
-        if tools_root_env:
-            tools_root = Path(tools_root_env).expanduser().resolve()
-        else:
-            tools_root = Path(__file__).resolve().parents[1]
-
-        if "rust" in det.detected_types:
-            rust_results = results_dir / "rust"
-            rust_tool_dir = (tools_root / "SCA" / "rust_sca" / "rustpj").resolve()
-            res = run_rust_sca(input_path=in_path, results_rust_dir=rust_results, rust_tool_dir=rust_tool_dir)
-            print(f"OK: rust 分析结果已输出到: {res.output_dir}")
-            if res.sbom_path:
-                print(f"- sbom: {res.sbom_path}")
-            if res.vuln_report_path:
-                print(f"- vuln_report: {res.vuln_report_path}")
-            print(f"- stdout: {res.stdout_path}")
-            print(f"- stderr: {res.stderr_path}")
-            return 0
-
-        if "python" in det.detected_types:
-            py_results = results_dir / "python"
-            uv_sca_dir = (tools_root / "SCA" / "uv_sca").resolve()
-            res = run_uv_sca(input_path=in_path, results_python_dir=py_results, uv_sca_dir=uv_sca_dir, offline_db_path=None)
-            print(f"OK: python(uv) 分析结果已输出到: {res.output_dir}")
-            print(f"- sbom: {res.sbom_path}")
-            print(f"- vuln_report: {res.vuln_report_path}")
-            if res.vuln_csv_path:
-                print(f"- vuln_csv: {res.vuln_csv_path}")
-            print(f"- details: {res.details_path}")
-            return 0
-
-        if "javascript" in det.detected_types:
-            js_results = results_dir / "javascript"
-            js_tool_dir = (tools_root / "SCA" / "js_sca").resolve()
-            res = run_javascript_sca(input_path=in_path, results_js_dir=js_results, js_tool_dir=js_tool_dir)
-            print(f"OK: javascript 分析结果已输出到: {res.output_dir}")
-            print(f"- sbom: {res.sbom_path}")
-            if res.sbom_enriched_path:
-                print(f"- sbom_enriched: {res.sbom_enriched_path}")
-            print(f"- stdout: {res.stdout_path}")
-            print(f"- stderr: {res.stderr_path}")
-            return 0
-
-        raise SystemExit(f"暂未接入该类型的分析：识别结果={det.detected_types}")
+        res = scan_by_type(detected_type=detected, input_path=in_path, results_dir=results_dir)
+        print(f"OK: {detected} 分析结果已输出到: {res.output_dir}")
+        print(f"- sbom: {res.sbom_path}")
+        print(f"- vuln_report: {res.vuln_report_path}")
+        print(f"- details: {res.scan_details_path}")
+        return 0
 
     parser.print_help()
     return 2
