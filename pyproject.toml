@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sca-wrapper"
+version = "0.1.0"
+description = "Unified SCA CLI wrapper (detect/scan) for Rust, Python(uv) and JavaScript tools."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = []
+
+[project.scripts]
+sca = "unified_sca.cli:main"
+
+[tool.setuptools]
+packages = { find = { include = ["unified_sca*"] } }
+
+

@@ -1,0 +1,58 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "serialNumber": "urn:uuid:dd8bc263-3a7a-4168-a8c6-08fbeb4a2a61",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2025-12-30T13:47:01.744990",
+    "tools": [
+      {
+        "vendor": "SCA Tool",
+        "name": "uv-SCA-engine",
+        "version": "1.0"
+      }
+    ],
+    "component": {
+      "type": "application",
+      "name": "scanned-project",
+      "version": "unknown"
+    }
+  },
+  "components": [
+    {
+      "type": "library",
+      "bom-ref": "pkg:pypi/requests@2.20.0",
+      "name": "requests",
+      "version": "2.20.0",
+      "purl": "pkg:pypi/requests@2.20.0"
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:pypi/urllib3@1.21.1",
+      "name": "urllib3",
+      "version": "1.21.1",
+      "purl": "pkg:pypi/urllib3@1.21.1"
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:pypi/jinja2@2.10.1",
+      "name": "jinja2",
+      "version": "2.10.1",
+      "purl": "pkg:pypi/jinja2@2.10.1"
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:pypi/django@1.11.29",
+      "name": "django",
+      "version": "1.11.29",
+      "purl": "pkg:pypi/django@1.11.29"
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:pypi/pillow@5.4.1",
+      "name": "pillow",
+      "version": "5.4.1",
+      "purl": "pkg:pypi/pillow@5.4.1"
+    }
+  ]
+}

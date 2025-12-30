@@ -1,0 +1,107 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "serialNumber": "urn:uuid:a48b0602-9cda-4984-a419-c4e03ac5408a",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2025-12-30T12:23:46.927497",
+    "tools": [
+      {
+        "vendor": "SCA Tool",
+        "name": "uv-SCA-engine",
+        "version": "1.0"
+      }
+    ],
+    "component": {
+      "type": "application",
+      "name": "scanned-project",
+      "version": "unknown"
+    }
+  },
+  "components": [
+    {
+      "type": "library",
+      "bom-ref": "pkg:pypi/vulnerable-test@0.1.0",
+      "name": "vulnerable-test",
+      "version": "0.1.0",
+      "purl": "pkg:pypi/vulnerable-test@0.1.0"
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:pypi/django@1.11.29",
+      "name": "django",
+      "version": "1.11.29",
+      "purl": "pkg:pypi/django@1.11.29"
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:pypi/pytz@2025.2",
+      "name": "pytz",
+      "version": "2025.2",
+      "purl": "pkg:pypi/pytz@2025.2"
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:pypi/jinja2@2.10.1",
+      "name": "jinja2",
+      "version": "2.10.1",
+      "purl": "pkg:pypi/jinja2@2.10.1"
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:pypi/markupsafe@3.0.3",
+      "name": "markupsafe",
+      "version": "3.0.3",
+      "purl": "pkg:pypi/markupsafe@3.0.3"
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:pypi/pillow@5.4.1",
+      "name": "pillow",
+      "version": "5.4.1",
+      "purl": "pkg:pypi/pillow@5.4.1"
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:pypi/requests@2.20.0",
+      "name": "requests",
+      "version": "2.20.0",
+      "purl": "pkg:pypi/requests@2.20.0"
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:pypi/certifi@2025.11.12",
+      "name": "certifi",
+      "version": "2025.11.12",
+      "purl": "pkg:pypi/certifi@2025.11.12"
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:pypi/chardet@3.0.4",
+      "name": "chardet",
+      "version": "3.0.4",
+      "purl": "pkg:pypi/chardet@3.0.4"
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:pypi/idna@2.7",
+      "name": "idna",
+      "version": "2.7",
+      "purl": "pkg:pypi/idna@2.7"
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:pypi/urllib3@1.21.1",
+      "name": "urllib3",
+      "version": "1.21.1",
+      "purl": "pkg:pypi/urllib3@1.21.1"
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:pypi/urllib3@1.21.1",
+      "name": "urllib3",
+      "version": "1.21.1",
+      "purl": "pkg:pypi/urllib3@1.21.1"
+    }
+  ]
+}

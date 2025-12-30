@@ -1,0 +1,10 @@
+[project]
+name = "python-sample"
+version = "0.1.0"
+description = "sample project for unified_sca wrapper"
+requires-python = ">=3.10"
+
+[tool.uv]
+dev-dependencies = []
+
+

@@ -1,0 +1,18 @@
+[project]
+name = "vulnerable-test"
+version = "0.1.0"
+description = "Test project with vulnerable dependencies"
+authors = [
+    {name = "Test User", email = "test@example.com"},
+]
+dependencies = [
+    "requests==2.20.0",      # 已知存在CVE-2018-18074等漏洞
+    "urllib3==1.21.1",       # 已知存在CVE-2018-20060等漏洞
+    "jinja2==2.10.1",        # 已知存在CVE-2019-10906等漏洞
+    "django==1.11.29",       # 已知存在多个CVE漏洞
+    "pillow==5.4.1",         # 已知存在CVE-2019-16865等漏洞
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

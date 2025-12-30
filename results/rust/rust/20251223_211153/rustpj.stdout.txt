@@ -1,0 +1,21 @@
+扫描文件: /Users/zhusicheng/Desktop/SCA/results/rust/.work/rust_20251223_211152/input_sanitized.zip
+EXTRACTED: Cargo.toml -> ./tmp/rust-vuln-wasmtime-gix/Cargo.toml
+EXTRACTED: Cargo.lock -> ./tmp/rust-vuln-wasmtime-gix/Cargo.lock
+EXTRACTED: main.rs -> ./tmp/rust-vuln-wasmtime-gix/src/main.rs
+Fetching license information...
+Building SBOM...
+SBOM generated successfully at: ./output/sbom.json
+Total components: 171
+Total dependencies: 171
+
+Scan completed!
+Total packages scanned: 171
+Vulnerabilities found: 2
+By severity:
+  Critical: 0
+  High:     0
+  Medium:   1
+  Low:      1
+  Unknown:  0
+
+Detailed report written to: ./output/vuln_report.json
